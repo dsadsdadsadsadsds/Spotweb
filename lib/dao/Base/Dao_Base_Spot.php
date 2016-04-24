@@ -655,6 +655,8 @@ class Dao_Base_Spot implements Dao_Spot {
 		} else {
 			$query = "SELECT COUNT(1) FROM spots AS s
 						LEFT JOIN spotsfull AS f ON s.messageid = f.messageid
+                                                LEFT JOIN collections AS c ON (s.collectionid = c.id)
+                                                LEFT JOIN mastercollections AS mc on (mc.id = c.mcid)
 						LEFT JOIN spotstatelist AS l ON s.messageid = l.messageid
 						LEFT JOIN spotteridblacklist as bl ON ((bl.spotterid = s.spotterid) AND (bl.ouruserid = -1) AND (bl.idtype = 1))
 						WHERE " . $sqlFilter . " AND (bl.spotterid IS NULL)";
