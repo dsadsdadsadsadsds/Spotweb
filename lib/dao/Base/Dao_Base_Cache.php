@@ -1,15 +1,15 @@
 <?php
 class Dao_Base_Cache implements Dao_Cache {
     protected   $_conn;
-	protected   $_cacheStore    = null;
-	
+    protected   $_cacheStore    = null;
+
 	/*
 	 * constructs a new Dao_Base_Cache object,
 	 * connection object is given
 	 */
 	public function __construct(dbeng_abs $conn, Dao_CacheStore $cacheStore) {
 		$this->_conn = $conn;
-        $this->_cacheStore = $cacheStore;
+		$this->_cacheStore = $cacheStore;
 	} # ctor
 
 	/*
@@ -64,7 +64,7 @@ class Dao_Base_Cache implements Dao_Cache {
         /*
          * Remove the item from disk and ignore any errors
          */
-        $this->_cacheStore->removeCacheItem($cacheId, $cachetype, $metaData);
+	$this->_cacheStore->removeCacheItem($cacheId, $cachetype, $metaData);
     } # removeCacheItem
 
 	/*
@@ -247,8 +247,16 @@ class Dao_Base_Cache implements Dao_Cache {
 	 * Retrieve a image resource from the cache
 	 */
 	function getCachedSpotImage($resourceId) {
-		return $this->getCache($resourceId, $this::SpotImage);
+		$tmpData = $this->getCache($resourceId, $this::SpotImage);
 
+        /*
+         * We need to 'migrate' the older cache format to this one
+         */
+        if (($tmpData !== false) && (!isset($tmpData['metadata']['dimensions']))) {
+            $tmpData['metadata'] = array('dimensions' => $tmpData['metadata'], 'isErrorImage' => false);
+        } // if
+
+        return $tmpData;
 	} # getCachedSpotImage
 
     /*
