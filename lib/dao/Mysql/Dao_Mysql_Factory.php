@@ -43,7 +43,7 @@
 	} # getUserDao
 
 	public function getCacheDao() {
-		return new Dao_Mysql_Cache($this->_conn, $this->getCachePath());
+		return new Dao_Mysql_Cache($this->_conn, $this->getCacheStore());
 	} # getCacheDao
 
 	public function getAuditDao() {
