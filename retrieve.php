@@ -2,16 +2,7 @@
 error_reporting(2147483647);
 
 try {
-	/*
-	 * If we are run from another directory, try to change the current
-	 * working directory to a directory the script is in
-	 */
-	if (@!file_exists(getcwd() . '/' . basename($argv[0]))) {
-		chdir(dirname(__FILE__));
-	} # if
-
-	require_once "lib/SpotClassAutoload.php";
-    SpotClassAutoload::register();
+    require_once __DIR__ . '/vendor/autoload.php';
 
 	/*
 	 * Initialize the Spotweb base classes

@@ -782,10 +782,22 @@ msgstr ""
 msgid "Portnumber of nzbget?"
 msgstr ""
 
-msgid "Username for nzbget? Attention: At this moment only <u>nzbget</u> is a valid name!"
+msgid "Username for nzbget?"
 msgstr ""
 
 msgid "Password for nzbget?"
+msgstr ""
+
+msgid "Call NZBVortex through HTTP by SpotWeb"
+msgstr ""
+
+msgid "Hostname of NZBVortex?"
+msgstr ""
+
+msgid "Portnumber of NZBVortex?"
+msgstr ""
+
+msgid "API-Key for NZBVortex?"
 msgstr ""
 
 msgid "Use Boxcar?"

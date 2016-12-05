@@ -1,5 +1,5 @@
 <?php
-include "includes/form-messages.inc.php";
+require __DIR__ . '/includes/form-messages.inc.php';
 
 /*
  * If this page is rendered without an result variable
@@ -86,7 +86,7 @@ if (!$result->isSubmitted()) {
 
 			<dt><label for="editfilterform[enablenotify]"><?php echo _('Notify me when this filter has new spots?'); ?></label></dt>
 			<dd>
-				<input type="checkbox" name="editfilterform[enablenotify]" <?php if ((isset($filter['enablenotify'])) && ($filter['enablenotify'])) { echo 'checked="checked" '; } ?> />
+				<input type="checkbox" name="editfilterform[enablenotify]" value="1" <?php if ((isset($filter['enablenotify'])) && ($filter['enablenotify'])) { echo ' checked="checked" '; } ?> />
 			</dd>
 			
 			<dd>

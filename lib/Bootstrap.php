@@ -5,8 +5,8 @@
  * used throughput Spotweb
  */
 define('SPOTWEB_SETTINGS_VERSION', '0.28');
-define('SPOTWEB_SECURITY_VERSION', '0.31');
-define('SPOTDB_SCHEMA_VERSION', '0.67');
+define('SPOTWEB_SECURITY_VERSION', '0.32');
+define('SPOTDB_SCHEMA_VERSION', '0.68');
 define('SPOTWEB_VERSION', '0.' . (SPOTDB_SCHEMA_VERSION * 100) . '.' . (SPOTWEB_SETTINGS_VERSION * 100) . '.' . (SPOTWEB_SECURITY_VERSION * 100));
 
 /*
@@ -78,7 +78,9 @@ class Bootstrap {
 	public function getDaoFactory() {
         SpotTiming::start(__CLASS__ . '::' . __FUNCTION__);
 
-		@include "dbsettings.inc.php";
+		if (file_exists(__DIR__ . '/../dbsettings.inc.php')) {
+			require __DIR__ . '/../dbsettings.inc.php';
+		}
         if (empty($dbsettings)) {
                 throw new DatabaseConnectionException("No database settings have been entered, please use the 'install.php' wizard to install and configure Spotweb." . PHP_EOL .
                                                       "If you are upgrading from an earlier version of Spotweb, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first");
@@ -163,7 +165,7 @@ class Bootstrap {
         /**
          * Add the file (ownsettings.php etc) source to override settings
          */
-        require "settings.php";
+        require __DIR__ . '/../settings.php';
         $fileSource = new Services_Settings_FileContainer();
         $fileSource->initialize($settings);
         $settingsContainer->addSource($fileSource);

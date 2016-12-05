@@ -37,6 +37,7 @@ class dbfts_pgsql extends dbfts_abs {
 		 */
 		$filterValueSql = array();
 		$sortFields = array();
+        $addFields = array();
 
 		foreach($searchFields as $searchItem) {
 			$searchValue = trim($searchItem['value']);
@@ -46,10 +47,10 @@ class dbfts_pgsql extends dbfts_abs {
 			 * if we get multiple textsearches, we sort them per order
 			 * in the system
 			 */
-			$tmpSortCounter = count($additionalFields);
+			$tmpSortCounter = count($additionalFields) + count($addFields);
 
             # Prepare the to_tsvector and to_tsquery strings
-            $ts_vector = "to_tsvector('Dutch', " . $field . ")";
+            $ts_vector = "to_tsvector('english',regexp_replace(".$field.",'(.)\\.(.)','\\1 \\2','g'))";
 
             /*
              * Inititialize Digital Stratum's FTS2 parser so we can
@@ -59,7 +60,7 @@ class dbfts_pgsql extends dbfts_abs {
             $o_parse->debug = false;
             $o_parse->upper_op_only = true;
             $o_parse->use_prepared_sql = false;
-            $o_parse->set_default_op('AND');
+            $o_parse->set_default_op('OR');
 
             /*
              * Do some preparation for the searchvalue, test cases:
@@ -74,20 +75,23 @@ class dbfts_pgsql extends dbfts_abs {
              * parse it
              */
             if ($o_parse->parse($searchValue, $field) === false) {
-                $ts_query = "plainto_tsquery('Dutch', " . $this->_db->safe(strtolower($searchValue)) . ")";
+                $ts_query = "plainto_tsquery('Dutch', " . $this->_db->safe(strtolower($searchValue).":*") . ")";
                 $filterValueSql[] = " " . $ts_vector . " @@ " . $ts_query;
-                $additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
+                $addFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
             } else {
                 $queryPart = array();
 
                 if (!empty($o_parse->tsearch)) {
-                    $ts_query = "to_tsquery('Dutch', " . $this->_db->safe($o_parse->tsearch) . ")";
+                    //$ts_query = "to_tsquery('Dutch', " . $this->_db->safe($o_parse->tsearch.":*") . ")";
+                    $ts_query = "to_tsquery('english', " . $this->_db->safe($o_parse->tsearch) . ")";
                     $queryPart[] = " " . $ts_vector . " @@ " . $ts_query;
-                    $additionalFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
+                    $addFields[] = " ts_rank(" . $ts_vector . ", " . $ts_query . ") AS searchrelevancy" . $tmpSortCounter;
                 } # if
 
                 if (!empty($o_parse->ilike)) {
-                    $queryPart[] = $o_parse->ilike;
+                    $re = '/(\'%\S+?)([ ])(\S+?%\')/';
+                    $ne = preg_replace($re,"$1_$3", $o_parse->ilike);
+                    $queryPart[] = $ne;
                 } # if
 
                 /*
@@ -104,11 +108,11 @@ class dbfts_pgsql extends dbfts_abs {
 								  'friendlyname' => null);
 		} # foreach
 
-		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($filterValueSql,$additionalFields,$sortFields));
+		SpotTiming::stop(__CLASS__ . '::' . __FUNCTION__, array($filterValueSql,$addFields,$sortFields));
 		
 		return array('filterValueSql' => $filterValueSql,
 					 'additionalTables' => array(),
-					 'additionalFields' => $additionalFields,
+					 'additionalFields' => $addFields,
 					 'sortFields' => $sortFields);
 	} # createTextQuery()
 

@@ -1,6 +1,9 @@
 <?php
 
  class Dao_Base_Factory extends Dao_Factory {
+     public function setCacheStore(Dao_CacheStore $cacheStore, $cachePath) {
+       throw new NotImplementedException();
+     } # setCacheStore
 
      public function setCacheStore(Dao_CacheStore $cacheStore, $cachePath) {
        throw new NotImplementedException();

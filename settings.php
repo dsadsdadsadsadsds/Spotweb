@@ -39,7 +39,7 @@ if (isset($_SERVER['SERVER_PROTOCOL'])) {
  * for OpenSSL to function. OpenSSL greatly speeds up the verifying and
  * signing of new keys.
  */
-$settings['openssl_cnf_path'] = "lib/openssl/openssl.cnf";
+$settings['openssl_cnf_path'] = __DIR__ . '/lib/openssl/openssl.cnf';
 
 /*
  * Define a cookie host. We try to automtaically set this, but feel
@@ -108,9 +108,10 @@ $settings['sabnzbd']['categories'] = Array(
  * Settings set in this file, will override settings from this file,
  * so please always use the 'ownsettings.php' file.
  *
- */					 
-if (@file_exists('../ownsettings.php')) { include_once('../ownsettings.php'); }
-if (file_exists('ownsettings.php')) { include_once('ownsettings.php'); }
+ */
+if (file_exists(__DIR__ . '/ownsettings.php')) {
+	require_once __DIR__ . '/ownsettings.php';
+}
 
 /*
  * List of quicklinks. First we test whether those are set within the 'ownsettings.php' file,
@@ -196,4 +197,6 @@ if (!empty($settings['db'])) {
 		throw new InvalidOwnSettingsSettingException("You need to remove the database settings from your ownsettings.php file and open install.php from your webbrowser. If you are upgrading, please consult https://github.com/spotweb/spotweb/wiki/Frequently-asked-questions/ first");
 } # if
 
-if (file_exists('reallymyownsettings.php')) { include_once('reallymyownsettings.php'); }
+if (file_exists(__DIR__ . '/reallymyownsettings.php')) {
+	require_once __DIR__ . '/reallymyownsettings.php';
+}
